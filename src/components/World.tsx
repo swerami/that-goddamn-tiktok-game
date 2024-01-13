@@ -2,10 +2,12 @@ import { useFrame } from "@react-three/fiber";
 import React, { useEffect } from "react";
 import * as THREE from "three"
 import Floor from "./Floor";
+import Player from "./Player";
+import { RapierRigidBody } from "@react-three/rapier";
 
 const World = () => {
     const [floors, setFloors] = React.useState<THREE.Vector3[]>()
-    const playerRef = React.useRef<THREE.Mesh>(null)
+    const playerRef = React.useRef<RapierRigidBody>(null!)
 
     useEffect(() => {
 
@@ -25,7 +27,7 @@ const World = () => {
     useFrame(() => {
         if (!playerRef.current) return;
 
-        const playerZ = playerRef.current.position.z;
+        const playerZ = playerRef.current.translation().z;
         const newFloorIndex = Math.floor(-playerZ / 10);
 
         if (newFloorIndex !== currentFloorIndex && newFloorIndex > 0) {
@@ -50,10 +52,7 @@ const World = () => {
             {floors?.map((position, index) => (
                 <Floor key={index} position={position} />
             ))}
-            <mesh ref={playerRef}>
-                <boxGeometry />
-                <meshBasicMaterial color={"blue"} />
-            </mesh>
+            <Player ref={playerRef} />
         </>
     );
 };
