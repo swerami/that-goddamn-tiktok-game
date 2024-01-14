@@ -42,8 +42,6 @@ const World = () => {
                 return [...prev!, newFloorPosition];
             });
         }
-
-        // playerRef.current.position.z -= 0.02;
     });
 
 
