@@ -3,7 +3,7 @@ import * as THREE from "three"
 import { useKeyboardControls } from "@react-three/drei";
 import { Controls } from '../types/Controls';
 import { useFrame } from '@react-three/fiber';
-import { RapierRigidBody, RigidBody } from '@react-three/rapier';
+import { CuboidCollider, RapierRigidBody, RigidBody } from '@react-three/rapier';
 import { Coordinates } from '../types/Coordinates';
 import { Astronaut } from './Astronaut';
 
@@ -24,13 +24,13 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
             const bodyOrigin = ref.current.translation();
             const currentVelocity = ref.current.linvel();
 
-            const impulseStrength = 15 * delta;
+            const impulseStrength = 4 * delta;
             const torqueStrength = 0.02 * delta;
 
             if (currentVelocity.z > -maxSpeed) {
                 if (!forward) {
-                    impulse.z -= impulseStrength;
-                    torque.x -= torqueStrength;
+                    // impulse.z -= impulseStrength;
+                    // torque.x -= torqueStrength;
                 }
             }
 
@@ -47,20 +47,20 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
             ref?.current?.applyTorqueImpulse(torque, true)
 
             if (bodyOrigin) {
-                const cameraPosition = new THREE.Vector3()
-                cameraPosition.copy(bodyOrigin as THREE.Vector3)
-                cameraPosition.z += 3.25
-                cameraPosition.y += 2.20
+                // const cameraPosition = new THREE.Vector3()
+                // cameraPosition.copy(bodyOrigin as THREE.Vector3)
+                // cameraPosition.z += 3.25
+                // cameraPosition.y += 2.20
 
-                const cameraTarget = new THREE.Vector3()
-                cameraTarget.copy(bodyOrigin as THREE.Vector3)
-                cameraTarget.z -= 5.25
+                // const cameraTarget = new THREE.Vector3()
+                // cameraTarget.copy(bodyOrigin as THREE.Vector3)
+                // cameraTarget.z -= 5.25
 
-                smoothCameraPosition.lerp(cameraPosition, 12 * delta)
-                smoothCameraTarget.lerp(cameraTarget, 12 * delta)
+                // smoothCameraPosition.lerp(cameraPosition, 12 * delta)
+                // smoothCameraTarget.lerp(cameraTarget, 12 * delta)
 
-                state.camera.position.copy(smoothCameraPosition)
-                state.camera.lookAt(smoothCameraTarget)
+                // state.camera.position.copy(smoothCameraPosition)
+                // state.camera.lookAt(smoothCameraTarget)
             }
 
         }
@@ -75,12 +75,14 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
             friction={1}
             linearDamping={0.1}
             angularDamping={0.5}
-            colliders="hull"
+            colliders={false}
             enabledRotations={[false, false, false]}
-            position={[0, 0.5, 0]}
+            position={[0, 0.1, 0]}
         >
             <Astronaut />
+            <CuboidCollider position={[0, 0.0, 0]} args={[0.5, 0.1, 0.4]} />
         </RigidBody>
+
     </>;
 });
 
