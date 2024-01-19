@@ -4,6 +4,7 @@ import * as THREE from "three"
 import Floor from "./Floor";
 import Player from "./Player";
 import { RapierRigidBody } from "@react-three/rapier";
+import Enemy from "./Enemy";
 
 const World = () => {
     const [floors, setFloors] = React.useState<THREE.Vector3[]>()
@@ -47,6 +48,7 @@ const World = () => {
 
     return (
         <>
+            <Enemy ref={playerRef} />
             {floors?.map((position, index) => (
                 <Floor key={index} position={position} />
             ))}
