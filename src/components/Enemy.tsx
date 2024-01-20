@@ -33,8 +33,8 @@ const Enemy = React.forwardRef<RapierRigidBody>((_, ref) => {
         <>
             <RigidBody ref={ref} position={[4, 0.5, -10]} colliders="cuboid">
                 <mesh ref={enemyRef}>
-                    <boxGeometry />
-                    <meshStandardMaterial color="red" />
+                    <boxGeometry args={[4, 4]} />
+                    <meshStandardMaterial color="blue" />
                 </mesh>
             </RigidBody>
         </>

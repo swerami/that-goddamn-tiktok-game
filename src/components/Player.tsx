@@ -14,8 +14,8 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
     const [smoothCameraPosition] = React.useState(() => new THREE.Vector3(10, 10, 10))
     const [smoothCameraTarget] = React.useState(() => new THREE.Vector3())
 
-    const geometry = new THREE.BoxGeometry(2, 2)
-    const mat = new THREE.MeshBasicMaterial({ color: "red" })
+    const geometry = new THREE.SphereGeometry(0.1)
+    const mat = new THREE.MeshStandardMaterial({ color: "red" })
     const bulletMesh = new THREE.Mesh(geometry, mat)
     const playerPositionRef = React.useRef<THREE.Vector3>(new THREE.Vector3());
 
@@ -23,17 +23,46 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
 
     const [bullets, setBullets] = React.useState<THREE.Mesh[]>()
 
-    const handleShooting = () => {
+    const [raycaster] = React.useState(() => new THREE.Raycaster());
+
+    const handleShooting = (scene: THREE.Scene) => {
         if (shootingEnabled.current) {
             let bullet = bulletMesh.clone();
-            bullet.position.set(playerPositionRef.current.x, playerPositionRef.current.y, playerPositionRef.current.z);
+            bullet.position.copy({ x: playerPosition.x, y: playerPosition.y + 0.65, z: playerPosition.z - 1.1 } as THREE.Vector3);
 
             setBullets((prevBullets) => (prevBullets ? [...prevBullets, bullet] : [bullet]));
 
             shootingEnabled.current = false;
 
+
+            const rayWidthMultiplier = 2
+            const bulletForward = new THREE.Vector3(0, 0, -1).applyQuaternion(bullet.quaternion);
+
+            bulletForward.multiplyScalar(rayWidthMultiplier);
+
+
+            raycaster.set(bullet.position, bulletForward);
+
+
+            const arrowHelper = new THREE.ArrowHelper(bulletForward, bullet.position, 10, 0xffff00);
+            scene.add(arrowHelper);
+
+
+            const intersections = raycaster.intersectObjects(scene.children, true);
+            // console.log(intersections)
+            intersections.map((item) => {
+
+                if ((item.object as THREE.Mesh).geometry.type == 'BoxGeometry') {
+                    console.log(item.object.type);
+                }
+
+            })
+
+
             setTimeout(() => {
                 shootingEnabled.current = true;
+                scene.remove(arrowHelper);
+
             }, 200);
         }
     }
@@ -99,9 +128,10 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
 
 
 
-                console.log(bullets)
-                handleShooting()
+                // console.log(bullets)
+                handleShooting(state.scene)
                 updateBullets()
+
             }
 
 
