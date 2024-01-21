@@ -53,10 +53,11 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
             intersections.map((item) => {
 
                 if ((item.object as THREE.Mesh).geometry.type == 'BoxGeometry') {
-                    console.log(item.object.type);
+                    // console.log(item.object.type);
                 }
 
             })
+
 
 
             setTimeout(() => {
@@ -64,6 +65,24 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
                 scene.remove(arrowHelper);
 
             }, 200);
+            let filteredIntersections = intersections.filter((obj) => (obj.object as THREE.Mesh).geometry instanceof THREE.BoxGeometry);
+
+            if (filteredIntersections.length > 0) {
+
+                const hitObject = filteredIntersections[0];
+                console.log(filteredIntersections);
+
+                scene.remove(hitObject.object);
+
+                const hitMesh = hitObject.object as THREE.Mesh;
+                if (hitMesh.geometry) hitMesh.geometry.dispose();
+                // if (hitMesh.material) {
+                //     if (hitMesh.material.map) hitMesh.material.map.dispose();
+                //     hitMesh.material.dispose();
+                // }
+            }
+
+
         }
     }
 
@@ -183,6 +202,11 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
             <Astronaut />
             <CuboidCollider position={[0, 0.0, 0]} args={[0.5, 0.1, 0.4]} />
         </RigidBody>
+
+        <mesh position={[-3, 0, -4]}>
+            <boxGeometry args={[4, 4]} />
+            <meshStandardMaterial color="blue" />
+        </mesh>
 
         {bullets && bullets?.map((bullet, index) => (
             <primitive key={index} object={bullet} />
