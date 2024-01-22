@@ -24,7 +24,7 @@ type ActionName = 'CharacterArmature|Death' | 'CharacterArmature|Duck' | 'Charac
 interface GLTFAction extends THREE.AnimationClip {
   name: ActionName
 }
-type ContextType = Record<string, React.ForwardRefExoticComponent<JSX.IntrinsicElements['mesh'] | JSX.IntrinsicElements['skinnedMesh'] | JSX.IntrinsicElements['bone']>>
+// type ContextType = Record<string, React.ForwardRefExoticComponent<JSX.IntrinsicElements['mesh'] | JSX.IntrinsicElements['skinnedMesh'] | JSX.IntrinsicElements['bone']>>
 
 export function Astronaut(props: JSX.IntrinsicElements['group']) {
   const group = useRef<THREE.Group>(null!)
@@ -39,7 +39,7 @@ export function Astronaut(props: JSX.IntrinsicElements['group']) {
   }, []);
 
   return (
-    <group scale={0.4} ref={group} {...props} dispose={null}>
+    <group position={[0, -0.4, 0]} scale={0.4} ref={group} {...props} dispose={null}>
       <group name="Root_Scene">
         <group name="RootNode">
           <group name="CharacterArmature" rotation={[-Math.PI / 2, 0, Math.PI]} scale={100}>
