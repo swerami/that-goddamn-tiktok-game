@@ -7,9 +7,9 @@ export const updateBullets = (
   raycaster: THREE.Raycaster,
   rayWidthMultiplier: number
 ) => {
-  if (bullets) {
+  if (bullets.length > 0) {
     bullets.forEach((bullet, i) => {
-      bullet.position.z -= 0.25;
+      bullet.position.z -= 0.55;
       if (bullet.position.z < playerPosition.z - 30) {
         scene.remove(bullet);
         bullet.parent?.remove(bullet);

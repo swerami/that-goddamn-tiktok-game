@@ -20,9 +20,11 @@ export const shoot = (
     setBullets((prevBullets) =>
       prevBullets ? [...prevBullets, bullet] : [bullet]
     );
+    console.log(shootingEnabled);
 
     // avoid creating bullet per frame
     shootingEnabled.current = false;
+    console.log(shootingEnabled);
 
     setTimeout(() => {
       shootingEnabled.current = true;
