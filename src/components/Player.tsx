@@ -7,6 +7,7 @@ import { BallCollider, RapierRigidBody, RigidBody } from '@react-three/rapier';
 import { Astronaut } from './Astronaut';
 import { onIntersect, shoot, updateBullets } from '../utils';
 import { handleThirdPersonCamera } from '../utils/handleThirdPlayerCamera';
+import Enemy from './Enemy';
 
 const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
     const [, get] = useKeyboardControls<Controls>()
@@ -108,8 +109,8 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
 
                 position={[0, 0.0, 0]} args={[0.4]} />
         </RigidBody>
-
-        <mesh position={[-3, 0, -24]}>
+        <Enemy playerPosition={playerPosition} />
+        {/* <mesh position={[-3, 0, -24]}>
             <boxGeometry args={[4, 4]} />
             <meshStandardMaterial color="blue" />
         </mesh>
@@ -124,7 +125,7 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
         <mesh position={[-3, 0, -124]}>
             <boxGeometry args={[4, 4]} />
             <meshStandardMaterial color="blue" />
-        </mesh>
+        </mesh> */}
 
         {bullets && bullets?.map((bullet, index) => (
             <primitive key={index} object={bullet} />
