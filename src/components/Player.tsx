@@ -42,8 +42,8 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
 
             if (currentVelocity.z > -maxSpeed) {
                 if (!forward) {
-                    impulse.z -= impulseStrength;
-                    torque.x -= torqueStrength;
+                    // impulse.z -= impulseStrength;
+                    // torque.x -= torqueStrength;
                 }
             }
 
