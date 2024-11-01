@@ -3,14 +3,14 @@ import * as THREE from "three";
 export const updateBullets = (
   scene: THREE.Scene,
   bullets: THREE.Mesh[],
-  playerPosition: THREE.Vector3,
+  playerPosition: React.MutableRefObject<THREE.Vector3>,
   raycaster: THREE.Raycaster,
   rayWidthMultiplier: number
 ) => {
   if (bullets.length > 0) {
     bullets.forEach((bullet, i) => {
       bullet.position.z -= 0.55;
-      if (bullet.position.z < playerPosition.z - 30) {
+      if (bullet.position.z < playerPosition.current.z - 30) {
         scene.remove(bullet);
         bullet.parent?.remove(bullet);
         bullet.geometry.dispose();
@@ -23,7 +23,7 @@ export const updateBullets = (
         raycaster.set(bullet.position, bulletForward);
 
         const intersections = raycaster.intersectObjects(scene.children, true);
-        let filteredIntersections = intersections.filter(
+        const  filteredIntersections = intersections.filter(
           (obj) =>
             (obj.object as THREE.Mesh).geometry instanceof THREE.BoxGeometry
         );

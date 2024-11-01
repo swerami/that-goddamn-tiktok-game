@@ -7,13 +7,13 @@ import {
 import { Controls } from "./types/Controls";
 import React from "react";
 import { Physics } from "@react-three/rapier";
-import {
-  EffectComposer,
-  DepthOfField,
-  Bloom,
-  Noise,
-  Vignette,
-} from "@react-three/postprocessing";
+// import {
+//   EffectComposer,
+//   DepthOfField,
+//   Bloom,
+//   Noise,
+//   Vignette,
+// } from "@react-three/postprocessing";
 // import { Bloom, DepthOfField, EffectComposer, Noise, Vignette } from '@react-three/postprocessing'
 // import { BlurPass, Resizer, KernelSize, Resolution } from 'postprocessing'
 

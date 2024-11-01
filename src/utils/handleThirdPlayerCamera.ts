@@ -9,7 +9,6 @@ export const handleThirdPersonCamera = (
   state: RootState,
   delta: number,
   ref: React.RefObject<RapierRigidBody>,
-  setPlayerPosition: React.Dispatch<React.SetStateAction<THREE.Vector3>>,
   playerPositionRef: React.MutableRefObject<THREE.Vector3>,
   smoothCameraPosition: React.MutableRefObject<THREE.Vector3>,
   smoothCameraTarget: React.MutableRefObject<THREE.Vector3>
@@ -31,7 +30,7 @@ export const handleThirdPersonCamera = (
 
   if (ref.current) {
     const position = ref.current.translation();
-    setPlayerPosition(new THREE.Vector3(position.x, position.y, position.z));
+    playerPositionRef.current.copy(new THREE.Vector3(position.x, position.y, position.z));
     playerPositionRef.current.set(position.x, position.y, position.z);
   }
 };
