@@ -5,15 +5,15 @@ import { Controls } from "../types/Controls";
 import { useFrame } from "@react-three/fiber";
 import { BallCollider, RapierRigidBody, RigidBody } from "@react-three/rapier";
 import { Astronaut } from "./Astronaut";
-import { createBullet, onIntersect } from "../utils";
+import { onIntersect } from "../utils";
 import { handleThirdPersonCamera } from "../utils/handleThirdPlayerCamera";
 import Enemy from "./Enemy";
 
 const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
   const [, get] = useKeyboardControls<Controls>();
-  const rayWidthMultiplier = 2;
-  const bulletsRef = React.useRef<THREE.Mesh[]>([]);
-  const [raycaster] = React.useState(() => new THREE.Raycaster());
+  // const rayWidthMultiplier = 2;
+  const bulletsRef = React.useRef<{ mesh: THREE.Mesh; hit: boolean }[]>([]);
+  const raycaster = React.useRef<THREE.Raycaster>(new THREE.Raycaster());
   const detectedObjectRef =
     React.useRef<THREE.Object3D<THREE.Object3DEventMap>>();
 
@@ -27,6 +27,8 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
     [geometry, mat]
   );
 
+  const [hasBeenShot, setHasBeenShot] = React.useState<number>(0);
+
   const playerPositionRef = React.useRef<THREE.Vector3>(new THREE.Vector3());
   const smoothCameraPosition = React.useRef<THREE.Vector3>(
     new THREE.Vector3(10, 10, 10)
@@ -35,14 +37,16 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
 
   // shooting trigger
   const shootingEnabled = React.useRef(true);
+
   const handleShoot = (scene: THREE.Scene) => {
-    const { bullet } = createBullet(
-      bulletMesh,
-      playerPositionRef,
-      raycaster,
-      rayWidthMultiplier
-    );
-    bulletsRef.current.push(bullet);
+    const bullet = bulletMesh.clone();
+    bullet.position.copy({
+      x: playerPositionRef.current.x,
+      y: playerPositionRef.current.y + 0.65,
+      z: playerPositionRef.current.z - 0.5,
+    } as THREE.Vector3);
+
+    bulletsRef.current.push({ mesh: bullet, hit: false });
     scene.add(bullet);
   };
 
@@ -53,7 +57,7 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
     const torque = { x: 0, y: 0, z: 0 };
     const maxSpeed = 14;
 
-    console.log(bulletsRef.current.length);
+    // console.log(bulletsRef.current.length);
 
     if ("current" in ref! && ref.current) {
       const bodyOrigin = ref.current.translation();
@@ -107,29 +111,44 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
         }
 
         if (bulletsRef.current) {
-          bulletsRef.current.forEach((bullet, i) => {
+          bulletsRef.current.forEach((bulletData, i) => {
+            const { mesh: bullet, hit } = bulletData;
             bullet.position.z -= 0.5;
-            if (bullet.position.z < -50) {
-              state.scene.remove(bullet);
-              bulletsRef.current.splice(i, 1);
+            // console.log("z: " + bullet.position.z);
+            if (!hit) {
+              raycaster.current.set(
+                bullet.position,
+                new THREE.Vector3(0, 0, -2).applyQuaternion(bullet.quaternion)
+              );
+              raycaster.current.far = 6.4;
+
+              const detectedIntersectObject = onIntersect(
+                state.scene,
+                raycaster.current
+              );
+              detectedObjectRef.current = detectedIntersectObject;
+
+              if (detectedObjectRef.current) {
+                // console.log("hit", detectedObjectRef.current);
+                bulletData.hit = true;
+                bullet.geometry.dispose();
+                state.scene.remove(bullet);
+                bulletsRef.current.splice(i, 1);
+                setHasBeenShot((n) => n + 1);
+              }
+
+              if (bullet.position.z < -50) {
+                state.scene.remove(bullet);
+                bulletsRef.current.splice(i, 1);
+              }
+              // console.log("length: ", bulletsRef.current.length);
             }
           });
         }
-        const detectedIntersectObject = onIntersect(state.scene, raycaster);
-        detectedObjectRef.current = detectedIntersectObject;
+        // console.log(detectedObjectRef.current);
       }
     }
   });
-
-  React.useEffect(() => {
-    const bullets = bulletsRef.current;
-    return () => {
-      bullets.forEach((mesh) => {
-        mesh.parent?.remove(mesh);
-        mesh.geometry.dispose();
-      });
-    };
-  }, []);
 
   return (
     <>
@@ -148,9 +167,10 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
         <BallCollider position={[0, 0.0, 0]} args={[0.4]} />
       </RigidBody>
 
-      {detectedObjectRef.current ? null : (
-        <Enemy playerPosition={playerPositionRef.current} />
-      )}
+      <Enemy
+        hasBeenShot={hasBeenShot}
+        playerPosition={playerPositionRef.current}
+      />
 
       {bulletsRef.current.map((bullet, index) => (
         <primitive key={index} object={bullet} />
