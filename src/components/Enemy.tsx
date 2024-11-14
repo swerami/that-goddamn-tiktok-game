@@ -15,7 +15,7 @@ const Enemy = ({
   setIsOutofDistance,
   hasBeenShot = 0,
 }: {
-  setIsOutofDistance: React.Dispatch<SetStateAction<boolean>>,
+  setIsOutofDistance: React.Dispatch<SetStateAction<boolean>>;
   playerPosition: THREE.Vector3;
   hasBeenShot: number;
 }) => {
@@ -41,9 +41,10 @@ const Enemy = ({
         currentEnemyState.current = EnemyState.IDLE;
       }
 
-      if (distance < - 5) {
-        setIsOutofDistance(true)
+      if (enemyPosition.z > playerPosition.z + 1) {
+        setIsOutofDistance(true);
       }
+
       // console.log(distance);
       if (currentEnemyState.current === EnemyState.CHASE && playerIsInRange) {
         const direction = new THREE.Vector3();
@@ -61,8 +62,8 @@ const Enemy = ({
 
   const randomPosition = (): THREE.Vector3 => {
     const randomX = Math.random() * 4;
-    const randomZ = (Math.random() + 1) * 26;
-    return new THREE.Vector3(randomX, 2.0, -randomZ);
+    const randomZ = playerPosition.z - (Math.random() + 1) * 26;
+    return new THREE.Vector3(randomX, 2.0, randomZ);
   };
 
   return (
@@ -72,9 +73,9 @@ const Enemy = ({
         type="kinematicPosition"
         colliders="cuboid"
         position={randomPosition()}
-      // onCollisionEnter={(other) => {
-      //   console.log(other.rigidBodyObject);
-      // }}
+        // onCollisionEnter={(other) => {
+        //   console.log(other.rigidBodyObject);
+        // }}
       >
         <Text position={[0, 3, 0]}>{hasBeenShot}</Text>
         <mesh>
