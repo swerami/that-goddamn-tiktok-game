@@ -1,7 +1,7 @@
 import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { RapierRigidBody, RigidBody } from "@react-three/rapier";
-import { useRef } from "react";
+import { SetStateAction, useRef } from "react";
 import * as THREE from "three";
 
 enum EnemyState {
@@ -12,8 +12,10 @@ enum EnemyState {
 
 const Enemy = ({
   playerPosition,
+  setIsOutofDistance,
   hasBeenShot = 0,
 }: {
+  setIsOutofDistance: React.Dispatch<SetStateAction<boolean>>,
   playerPosition: THREE.Vector3;
   hasBeenShot: number;
 }) => {
@@ -31,12 +33,16 @@ const Enemy = ({
         currentTranslation.z
       );
       const distance = enemyPosition.distanceTo(playerPosition);
-      console.log(distance);
+      // console.log(distance);
       if (distance < 425 && distance > 5) {
         playerIsInRange.current = true;
       } else {
         playerIsInRange.current = false;
         currentEnemyState.current = EnemyState.IDLE;
+      }
+
+      if (distance < - 5) {
+        setIsOutofDistance(true)
       }
       // console.log(distance);
       if (currentEnemyState.current === EnemyState.CHASE && playerIsInRange) {
@@ -66,9 +72,9 @@ const Enemy = ({
         type="kinematicPosition"
         colliders="cuboid"
         position={randomPosition()}
-        onCollisionEnter={(other) => {
-          console.log(other.rigidBodyObject);
-        }}
+      // onCollisionEnter={(other) => {
+      //   console.log(other.rigidBodyObject);
+      // }}
       >
         <Text position={[0, 3, 0]}>{hasBeenShot}</Text>
         <mesh>

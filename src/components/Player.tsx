@@ -16,7 +16,7 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
   const raycaster = React.useRef<THREE.Raycaster>(new THREE.Raycaster());
   const detectedObjectRef =
     React.useRef<THREE.Object3D<THREE.Object3DEventMap>>();
-
+  const [outofDistance, setIsOutofDistance] = React.useState<boolean>(false);
   const geometry = React.useMemo(() => new THREE.SphereGeometry(0.1), []);
   const mat = React.useMemo(
     () => new THREE.MeshStandardMaterial({ color: "red" }),
@@ -28,6 +28,7 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
   );
 
   const [hasBeenShot, setHasBeenShot] = React.useState<number>(0);
+
 
   const playerPositionRef = React.useRef<THREE.Vector3>(new THREE.Vector3());
   const smoothCameraPosition = React.useRef<THREE.Vector3>(
@@ -109,7 +110,9 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
           shootingEnabled.current = false;
           setTimeout(() => (shootingEnabled.current = true), 200);
         }
-
+        if (outofDistance == true) {
+          console.log("somethings out of distance")
+        }
         if (bulletsRef.current) {
           bulletsRef.current.forEach((bulletData, i) => {
             const { mesh: bullet, hit } = bulletData;
@@ -166,12 +169,19 @@ const Player = React.forwardRef<RapierRigidBody>((_, ref) => {
         <Astronaut />
         <BallCollider position={[0, 0.0, 0]} args={[0.4]} />
       </RigidBody>
-
-      <Enemy
+// TODO: conditionally render if player died
+      // TODO: Conditionally render if player is ahead of the enemy, using same formula inside the enemy component
+      {hasBeenShot < 10 || outofDistance ? <Enemy
         hasBeenShot={hasBeenShot}
+        setIsOutofDistance={setIsOutofDistance}
         playerPosition={playerPositionRef.current}
       />
-
+        : null}
+      {/**/}
+      {/* {Array.from({ length: 10 }, (_, i) => { */}
+      {/*   hasBeenShot < 10 ? <Enemy key={i} hasBeenShot={hasBeenShot} playerPosition={playerPositionRef.current} /> : null */}
+      {/* } */}
+      {/* )} */}
       {bulletsRef.current.map((bullet, index) => (
         <primitive key={index} object={bullet} />
       ))}
