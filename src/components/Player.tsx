@@ -117,13 +117,13 @@ const Player = React.memo(
           if (shootingEnabled.current) {
             handleShoot(state.scene);
             shootingEnabled.current = false;
-            setTimeout(() => (shootingEnabled.current = true), 5200);
+            setTimeout(() => (shootingEnabled.current = true), 200);
           }
           if (bulletsRef.current) {
             bulletsRef.current.forEach((bulletData, i) => {
-              let { mesh: bullet, hit } = bulletData;
+              const { mesh: bullet } = bulletData;
               bullet.position.z -= 0.5;
-              enemies.current.forEach((enemy) => {
+              enemies.current.forEach((enemy, j) => {
                 const enemyX = enemy.position.x;
                 const enemyZ = enemy.position.z;
                 if (
@@ -132,18 +132,21 @@ const Player = React.memo(
                   enemyZ >= bullet.position.z - boxWidth / 2 &&
                   enemyZ <= bullet.position.z + boxWidth / 2
                 ) {
-                  hit = true;
-                  if (hit) {
+                  bulletData.hit = true;
+                  if (bulletData.hit) {
+                    console.log("removing bullet:", i);
+                    state.scene.remove(enemy);
+                    enemies.current.splice(j, 1);
+
                     state.scene.remove(bullet);
                     bulletsRef.current.splice(i, 1);
-                    console.log("enemy hit");
                   }
                 }
               });
 
               if (bullet.position.z < playerPositionRef.current.z - 50) {
-                state.scene.remove(bullet);
                 bulletsRef.current.splice(i, 1);
+                state.scene.remove(bullet);
               }
             });
           }
