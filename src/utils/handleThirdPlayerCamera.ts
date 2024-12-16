@@ -1,14 +1,13 @@
 // utils.ts
 import * as THREE from "three";
 import { RootState } from "@react-three/fiber";
-import { RapierRigidBody } from "@react-three/rapier";
 import { Vector } from "three/examples/jsm/physics/RapierPhysics.js";
 
 export const handleThirdPersonCamera = (
   bodyOrigin: Vector,
   state: RootState,
   delta: number,
-  ref: React.RefObject<RapierRigidBody>,
+  ref: React.RefObject<THREE.Group>,
   playerPositionRef: React.MutableRefObject<THREE.Vector3>,
   smoothCameraPosition: React.MutableRefObject<THREE.Vector3>,
   smoothCameraTarget: React.MutableRefObject<THREE.Vector3>
@@ -29,7 +28,7 @@ export const handleThirdPersonCamera = (
   state.camera.lookAt(smoothCameraTarget.current);
 
   if (ref.current) {
-    const position = ref.current.translation();
+    const position = ref.current.position;
     playerPositionRef.current.copy(new THREE.Vector3(position.x, position.y, position.z));
     playerPositionRef.current.set(position.x, position.y, position.z);
   }

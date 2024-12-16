@@ -4,6 +4,7 @@ import {
   KeyboardControlsEntry,
   OrbitControls,
 } from "@react-three/drei";
+import { Stats } from "@react-three/drei";
 import { Controls } from "./types/Controls";
 import React from "react";
 import { Physics } from "@react-three/rapier";
@@ -37,6 +38,8 @@ const Experience = () => {
         </Physics>
       </KeyboardControls>
       <OrbitControls />
+      {/* <FPSStats /> */}
+      <Stats />
       <ambientLight intensity={1.5} />
       <directionalLight intensity={1.0} />
       {/* <EffectComposer>
