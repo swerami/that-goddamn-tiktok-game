@@ -41,7 +41,7 @@ interface GLTFAction extends THREE.AnimationClip {
 
 const Astronaut = forwardRef<THREE.Group, JSX.IntrinsicElements["group"]>(
   (props, ref) => {
-    const localRef = useRef<THREE.Group>(null!);
+    const localRef = useRef<THREE.Group | null>(null);
     const { nodes, materials, animations } = useGLTF(
       "./models/Astronaut.glb"
     ) as GLTFResult;
@@ -57,11 +57,12 @@ const Astronaut = forwardRef<THREE.Group, JSX.IntrinsicElements["group"]>(
         position={[0, 0.4, 0]}
         scale={0.4}
         ref={(instance) => {
-          // Forward the ref to the parent while keeping the local ref intact
-          if (typeof ref === "function") ref(instance);
-          else if (ref)
-            (ref as React.MutableRefObject<THREE.Group>).current = instance;
-
+          if (typeof ref === "function") {
+            ref(instance);
+          } else if (ref && "current" in ref) {
+            (ref as React.MutableRefObject<THREE.Group | null>).current =
+              instance;
+          }
           localRef.current = instance;
         }}
         {...props}
